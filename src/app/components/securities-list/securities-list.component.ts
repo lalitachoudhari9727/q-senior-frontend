@@ -41,6 +41,7 @@ import { AsyncPipe } from '@angular/common';
 })
 export class SecuritiesListComponent {
   protected displayedColumns: string[] = ['name', 'type', 'currency'];
+  filter: any = { skip: 0, limit: 10 };
 
   private _securityService = inject(SecurityService);
   protected loadingSecurities$: BehaviorSubject<boolean> =
@@ -49,4 +50,15 @@ export class SecuritiesListComponent {
   protected securities$: Observable<Security[]> = this._securityService
     .getSecurities({})
     .pipe(indicate(this.loadingSecurities$));
+
+  onFilterChanged(event: any) {
+    this.filter = { ...this.filter, ...event, skip: 0 }; // reset to first page on filter change
+    this.load();
+  }
+
+  load() {
+    this.securities$ = this._securityService
+      .getSecurities(this.filter)
+      .pipe(indicate(this.loadingSecurities$));
+  }
 }
