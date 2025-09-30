@@ -45,8 +45,10 @@ export class FilterBarComponent {
       group[f.key] = [f.type === 'checkbox' ? false : null]; // default values
     });
     this.form = this.fb.group(group);
-    this.form.valueChanges.subscribe((value) => {
-      this.filterChanged.emit(value);
-    });
+   
+  }
+  onApplyFilterClicked() {
+    let data = this.form.value;
+    this.filterChanged.emit(data);
   }
 }

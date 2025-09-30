@@ -6,7 +6,7 @@
         <mat-label>{{ field.label }}</mat-label>
         <input matInput [formControlName]="field.key" />
       </mat-form-field>
-
+ 
       <!-- Single Select -->
 
       <mat-form-field *ngSwitchCase="'select'" appearance="outline">
@@ -41,6 +41,7 @@
       mat-stroked-button
       color="primary"
       type="button"
+      (click)="onApplyFilterClicked()"
       class="outlined-button"
     >
       Apply Filter

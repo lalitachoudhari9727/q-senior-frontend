@@ -84,7 +84,7 @@ export class FilterableTableComponent<T> implements AfterContentInit {
     this.table?.setNoDataRow(this.noDataRow ?? null);
   }
   onFilterChanged(event: any) {
-    console.log(event);
+   // console.log(event);
     this.filterEventChanged.emit(event);
   }
 }

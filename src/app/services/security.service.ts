@@ -31,11 +31,11 @@ export class SecurityService {
       (s) =>
         (!securityFilter.name ||
           s.name.toLowerCase().includes(securityFilter.name.toLowerCase())) &&
-        (!securityFilter.types ||
+        (!securityFilter.types?.length ||
           securityFilter.types.some(
             (type) => s.type.toLowerCase() === type.toLowerCase()
           )) &&
-        (!securityFilter.currencies ||
+        (!securityFilter.currencies?.length ||
           securityFilter.currencies.some(
             (currency) => s.currency.toLowerCase() == currency.toLowerCase()
           )) &&

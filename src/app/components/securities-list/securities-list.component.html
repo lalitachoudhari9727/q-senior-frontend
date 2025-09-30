@@ -28,3 +28,8 @@
     <td class="mat-cell" colspan="3"><i>No Results Found</i></td>
   </tr>
 </filterable-table>
+<app-pagination
+  [length]="totalCount"
+  [pageSize]="filter.limit || 10"
+  (pageChange)="onPageChange($event)">
+</app-pagination>

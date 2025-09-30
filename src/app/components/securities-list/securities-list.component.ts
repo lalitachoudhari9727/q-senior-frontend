@@ -17,6 +17,8 @@ import { Security } from '../../models/security';
 import { SecurityService } from '../../services/security.service';
 import { FilterableTableComponent } from '../filterable-table/filterable-table.component';
 import { AsyncPipe } from '@angular/common';
+import { SECURITIES } from '../../mocks/securities-mocks';
+import { PaginationComponent } from '../pagination/pagination.component';
 
 @Component({
   selector: 'securities-list',
@@ -34,6 +36,7 @@ import { AsyncPipe } from '@angular/common';
     MatNoDataRow,
     MatRowDef,
     MatRow,
+    PaginationComponent
   ],
   templateUrl: './securities-list.component.html',
   styleUrl: './securities-list.component.scss',
@@ -41,22 +44,27 @@ import { AsyncPipe } from '@angular/common';
 })
 export class SecuritiesListComponent {
   protected displayedColumns: string[] = ['name', 'type', 'currency'];
-  filter: any = { skip: 0, limit: 10 };
+  filter: any = { skip: 0, limit: 10 }; 
+   totalCount = SECURITIES.length;
 
   private _securityService = inject(SecurityService);
   protected loadingSecurities$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
 
   protected securities$: Observable<Security[]> = this._securityService
-    .getSecurities({})
+    .getSecurities(this.filter)
     .pipe(indicate(this.loadingSecurities$));
 
   onFilterChanged(event: any) {
     this.filter = { ...this.filter, ...event, skip: 0 }; // reset to first page on filter change
     this.load();
   }
-
+onPageChange(event: { skip: number; limit: number }) {
+  this.filter = { ...this.filter, ...event };
+  this.load();
+}
   load() {
+    console.log('req body',this.filter)
     this.securities$ = this._securityService
       .getSecurities(this.filter)
       .pipe(indicate(this.loadingSecurities$));
