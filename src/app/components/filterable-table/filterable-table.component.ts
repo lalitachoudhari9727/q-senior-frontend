@@ -38,7 +38,6 @@ export class FilterableTableComponent<T> implements AfterContentInit {
   @ContentChild(MatNoDataRow) noDataRow?: MatNoDataRow;
 
   @ViewChild(MatTable, { static: true }) table?: MatTable<T>;
-
   @Input() columns: string[] = [];
 
   @Input() dataSource:
@@ -48,6 +47,7 @@ export class FilterableTableComponent<T> implements AfterContentInit {
     | null = null;
   @Input() isLoading: boolean | null = true;
   @Output() filterEventChanged = new EventEmitter<Partial<any>>();
+  @Output() clearFilterChanged = new EventEmitter<Partial<any>>();
   filter: any = { skip: 0, limit: 10 };
 
   fields: FilterField<any>[] = [
@@ -86,5 +86,8 @@ export class FilterableTableComponent<T> implements AfterContentInit {
   onFilterChanged(event: any) {
    // console.log(event);
     this.filterEventChanged.emit(event);
+  }
+  onClearFilter(event:any){
+  this.clearFilterChanged.emit(event);
   }
 }

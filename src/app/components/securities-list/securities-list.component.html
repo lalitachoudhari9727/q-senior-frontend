@@ -3,6 +3,7 @@
   [dataSource]="securities$ | async"
   [isLoading]="loadingSecurities$ | async"
   (filterEventChanged)="onFilterChanged($event)"
+  (clearFilterChanged)="onFilterChanged($event)"
 >
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -30,6 +31,8 @@
 </filterable-table>
 <app-pagination
   [length]="totalCount"
-  [pageSize]="filter.limit || 10"
-  (pageChange)="onPageChange($event)">
+  [pageSize]="filter.limit || 5"
+  (pageChange)="onPageChange($event)"
+  [pageIndex]="currentPageIndex"
+  >
 </app-pagination>

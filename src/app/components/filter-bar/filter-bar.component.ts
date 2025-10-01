@@ -33,6 +33,7 @@ export class FilterBarComponent {
   @Input() fields: FilterField<any>[] = [];
   @Input() initialValue: Partial<any> | null = null;
   @Output() filterChanged = new EventEmitter<Partial<any>>();
+  @Output() clearFilterChanged = new EventEmitter<Partial<any>>();
   form: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -45,10 +46,12 @@ export class FilterBarComponent {
       group[f.key] = [f.type === 'checkbox' ? false : null]; // default values
     });
     this.form = this.fb.group(group);
-   
   }
   onApplyFilterClicked() {
     let data = this.form.value;
     this.filterChanged.emit(data);
+  }
+  onClearFilterClicked() {
+   this.clearFilterChanged.emit({isClearFilter:true})
   }
 }

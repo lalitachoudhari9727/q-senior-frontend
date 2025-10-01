@@ -3,7 +3,9 @@
  <app-filter-bar
   [fields]="fields"
   [initialValue]="filter"
-  (filterChanged)="onFilterChanged($event)">
+  (filterChanged)="onFilterChanged($event)"
+  (clearFilterChanged) ="onClearFilter($event)"
+  >
 </app-filter-bar>
 </fieldset>
 

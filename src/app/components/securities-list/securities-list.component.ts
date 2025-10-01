@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -36,17 +41,19 @@ import { PaginationComponent } from '../pagination/pagination.component';
     MatNoDataRow,
     MatRowDef,
     MatRow,
-    PaginationComponent
+    PaginationComponent,
   ],
   templateUrl: './securities-list.component.html',
   styleUrl: './securities-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SecuritiesListComponent {
+  @ViewChild(PaginationComponent) paginator!: PaginationComponent;
   protected displayedColumns: string[] = ['name', 'type', 'currency'];
-  filter: any = { skip: 0, limit: 10 }; 
-   totalCount = SECURITIES.length;
-
+  filter: any = { skip: 0, limit: 5 };
+  totalCount = SECURITIES.length;
+  pageSize = 5;
+  pageIndex = 0;
   private _securityService = inject(SecurityService);
   protected loadingSecurities$: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(false);
@@ -55,18 +62,73 @@ export class SecuritiesListComponent {
     .getSecurities(this.filter)
     .pipe(indicate(this.loadingSecurities$));
 
+  ngOnInit() {
+    console.log('seurity list rendered');
+    //this.load();
+  }
   onFilterChanged(event: any) {
-    this.filter = { ...this.filter, ...event, skip: 0 }; // reset to first page on filter change
+    if (!event.isClearFilter) {
+      this.filter = { skip: 0, limit: 5, ...event };
+    } else {
+      this.filter = {
+        skip: 0, // reset to first page
+        limit: this.pageSize, // keep current page size
+        name: '',
+        types: [],
+        currencies: [],
+        isPrivate: undefined,
+      };
+
+      // this.filter = cleared;
+      console.log('cleared..', this.filter);
+    }
+
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
     this.load();
   }
-onPageChange(event: { skip: number; limit: number }) {
-  this.filter = { ...this.filter, ...event };
-  this.load();
-}
+
+  onPageChange(event: { skip: number; limit: number }) {
+    // console.log('onpagechange filter..', this.filter, event);
+    this.filter.skip = event.skip;
+    this.filter.limit = event.limit;
+    this.load();
+  }
   load() {
-    console.log('req body',this.filter)
+    const activeFilter = { ...this.filter };
+
     this.securities$ = this._securityService
-      .getSecurities(this.filter)
+      .getSecurities(activeFilter)
       .pipe(indicate(this.loadingSecurities$));
+
+    this.calcTotalCount(activeFilter);
+    //this.calcTotalCount();
+  }
+  get currentPageIndex(): number {
+    return Math.floor(this.filter.skip / this.filter.limit);
+  }
+  calcTotalCount(activeFilter: any) {
+    const countFilter = { ...activeFilter };
+    delete countFilter.skip;
+    delete countFilter.limit;
+
+    this._securityService
+      .getSecurities(countFilter)
+      .pipe(indicate(this.loadingSecurities$))
+      .subscribe((data) => {
+        this.totalCount = data.length;
+        // Reset paginator if total items less than current page
+        if (this.paginator) {
+          const maxPageIndex = Math.floor(
+            (this.totalCount - 1) / this.filter.limit
+          );
+          if (this.paginator.pageIndex > maxPageIndex) {
+            this.paginator.pageIndex = 0;
+            this.filter.skip = 0;
+            this.load(); // reload first page
+          }
+        }
+      });
   }
 }
