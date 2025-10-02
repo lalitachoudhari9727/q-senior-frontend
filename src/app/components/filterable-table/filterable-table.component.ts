@@ -5,6 +5,7 @@ import {
   ContentChild,
   ContentChildren,
   EventEmitter,
+  inject,
   Input,
   Output,
   QueryList,
@@ -22,6 +23,9 @@ import { DataSource } from '@angular/cdk/collections';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { FilterField } from '../../models/filter-config';
 import { FilterBarComponent } from '../filter-bar/filter-bar.component';
+import { SECURITIES } from '../../mocks/securities-mocks';
+import { Security } from '../../models/security';
+import { FilterService } from '../../shared/filter.service';
 
 @Component({
   selector: 'filterable-table',
@@ -48,30 +52,16 @@ export class FilterableTableComponent<T> implements AfterContentInit {
   @Input() isLoading: boolean | null = true;
   @Output() filterEventChanged = new EventEmitter<Partial<any>>();
   @Output() clearFilterChanged = new EventEmitter<Partial<any>>();
-  filter: any = { skip: 0, limit: 10 };
+  filter: any = { skip: 0, limit: 5 };
+  fields: FilterField[] = [];
+  securities: Security[] = SECURITIES;
+  private _filterService = inject(FilterService);
 
-  fields: FilterField<any>[] = [
-    { key: 'name', label: 'Name', type: 'text' },
-    {
-      key: 'types',
-      label: 'Types',
-      type: 'multiselect',
-      options: [
-        { label: 'Equity', value: 'Equity' },
-        { label: 'BankAccount', value: 'BankAccount' },
-      ],
-    },
-    {
-      key: 'currencies',
-      label: 'Currencies',
-      type: 'multiselect',
-      options: [
-        { label: 'USD', value: 'USD' },
-        { label: 'EUR', value: 'EUR' },
-      ],
-    },
-    { key: 'isPrivate', label: 'Private', type: 'checkbox' },
-  ];
+  ngOnInit() {
+    this.fields = this._filterService.buildFilterFieldsFromSecurities(
+      this.securities
+    );
+  }
 
   public ngAfterContentInit(): void {
     this.columnDefs?.forEach((columnDef) =>
@@ -84,10 +74,9 @@ export class FilterableTableComponent<T> implements AfterContentInit {
     this.table?.setNoDataRow(this.noDataRow ?? null);
   }
   onFilterChanged(event: any) {
-   // console.log(event);
     this.filterEventChanged.emit(event);
   }
-  onClearFilter(event:any){
-  this.clearFilterChanged.emit(event);
+  onClearFilter(event: any) {
+    this.clearFilterChanged.emit(event);
   }
 }

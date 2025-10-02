@@ -9,10 +9,12 @@ import { FilterField } from '../../models/filter-config';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+
 @Component({
   selector: 'app-filter-bar',
   standalone: true,
@@ -20,10 +22,14 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     CommonModule,
     MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatButtonModule,
+    MatInput,
+    MatSelect,
+    MatCheckbox,
+    MatButton,
+    MatRadioGroup,
+    MatRadioButton,
+    MatOption,
+    MatCheckbox,
   ],
   templateUrl: './filter-bar.component.html',
   styleUrl: './filter-bar.component.scss',
@@ -32,8 +38,8 @@ import { MatButtonModule } from '@angular/material/button';
 export class FilterBarComponent {
   @Input() fields: FilterField<any>[] = [];
   @Input() initialValue: Partial<any> | null = null;
-  @Output() filterChanged = new EventEmitter<Partial<any>>();
-  @Output() clearFilterChanged = new EventEmitter<Partial<any>>();
+  @Output() filterChanged = new EventEmitter<any>();
+  @Output() clearFilterChanged = new EventEmitter<any>();
   form: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -43,7 +49,7 @@ export class FilterBarComponent {
   ngOnInit() {
     const group: any = {};
     this.fields.forEach((f) => {
-      group[f.key] = [f.type === 'checkbox' ? false : null]; // default values
+      group[f.key] = [f.type === 'checkbox' ? true : null]; // default values
     });
     this.form = this.fb.group(group);
   }
@@ -52,6 +58,14 @@ export class FilterBarComponent {
     this.filterChanged.emit(data);
   }
   onClearFilterClicked() {
-   this.clearFilterChanged.emit({isClearFilter:true})
+    const resetValue = {
+      name: '',
+      types: [],
+      currencies: [],
+      isPrivate: false,
+    };
+
+    this.form.reset(resetValue);
+    this.filterChanged.emit(resetValue);
   }
 }

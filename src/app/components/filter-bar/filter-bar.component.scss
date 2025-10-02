@@ -1,20 +1,15 @@
 :host {
   display: block;
 }
-.apply-filter-button {
-  border-radius: 0;      /* square corners */
-  min-width: 120px;      /* minimum width */
-  height: 40px;          /* button height */
-  padding: 0 16px;       /* horizontal padding for text */
-}
+
 mat-form-field {
-  width: 200px; /* uniform width for inputs */
+  width: 200px; 
 }
 
-
+ 
 .filter-bar {
   display: flex;
-  flex-wrap: wrap;       /* wrap to next line if too wide */
-  gap: 16px;             /* space between controls */
-  align-items: center;   /* vertical alignment */
+  flex-wrap: wrap;      
+  gap: 16px;     
+  align-items: baseline;       
 }
